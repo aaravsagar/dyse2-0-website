@@ -1,0 +1,43 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from '@/components/ui/toaster';
+import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
+
+import Home from '@/pages/Home';
+import TermsAndConditions from '@/pages/user-agreements/TermsAndConditions';
+import PrivacyPolicy from '@/pages/user-agreements/PrivacyPolicy';
+import Casino from '@/pages/usage/Casino';
+import Earn from '@/pages/usage/Earn';
+import Leaderboard from '@/pages/usage/Leaderboard';
+import Commands from '@/pages/usage/Commands';
+import { Status } from '@/pages/Status';
+import Report from '@/pages/Report';
+import NotFound from '@/pages/NotFound';
+
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen flex flex-col bg-[#36393F] text-white">
+        <Navbar />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/user-agreements/terms" element={<TermsAndConditions />} />
+            <Route path="/user-agreements/privacy" element={<PrivacyPolicy />} />
+            <Route path="/usage/casino" element={<Casino />} />
+            <Route path="/usage/earn" element={<Earn />} />
+            <Route path="/usage/leaderboard" element={<Leaderboard />} />
+            <Route path="/usage/commands" element={<Commands />} />
+            <Route path="/status" element={<Status />} />
+            <Route path="/report" element={<Report />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <Footer />
+        <Toaster />
+      </div>
+    </Router>
+  );
+}
+
+export default App;
