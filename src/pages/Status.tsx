@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { botStatusRef, onValue, update } from '@/lib/firebase';
 import { BotStatusType, CommandDetail } from '@/types';
 
-const OFFLINE_THRESHOLD_MS = 2000; // 2 seconds threshold
+// Removed unused OFFLINE_THRESHOLD_MS
 
 const commandDetails: Record<string, CommandDetail> = {
   help: {
@@ -32,7 +32,6 @@ export function Status() {
   const prevUptimeRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Subscribe to botStatus in realtime DB
     const unsubBotStatus = onValue(botStatusRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -47,7 +46,6 @@ export function Status() {
   }, []);
 
   useEffect(() => {
-    // Check uptime updates every 5 seconds
     const interval = setInterval(() => {
       if (!botStatusData) {
         setIsBotActive(false);
@@ -58,14 +56,12 @@ export function Status() {
       const currentUptime = botStatusData.uptime;
 
       if (prevUptimeRef.current === null) {
-        // Initialize previous uptime
         prevUptimeRef.current = currentUptime;
         setIsBotActive(true);
         return;
       }
 
       if (currentUptime === prevUptimeRef.current) {
-        // Uptime not changed since last check => offline
         if (botStatusData.status !== 'Offline') {
           update(botStatusRef, {
             status: 'Offline',
@@ -74,7 +70,6 @@ export function Status() {
         }
         setIsBotActive(false);
       } else {
-        // Uptime updated => online
         if (botStatusData.status !== 'Online') {
           update(botStatusRef, {
             status: 'Online',
@@ -114,13 +109,15 @@ export function Status() {
     );
   }
 
-  // Helper to show stats or fallback when offline
   const renderStat = (value: string | number | undefined | null) => {
     if (isBotActive && botStatusData.status.toLowerCase() === 'online') {
       return value ?? '-';
     }
     return '-';
   };
+
+  // Fixed Progress component usage here:
+  // Removed `indicatorClassName` and conditionally set className for progress bar color
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -167,8 +164,7 @@ export function Status() {
                 </div>
                 <Progress
                   value={botStatusData.health.toLowerCase() === 'good' ? 100 : 30}
-                  className="h-2"
-                  indicatorClassName={botStatusData.health.toLowerCase() === 'good' ? 'bg-green-500' : 'bg-red-500'}
+                  className={`h-2 ${botStatusData.health.toLowerCase() === 'good' ? 'bg-green-500' : 'bg-red-500'}`}
                 />
               </div>
 
@@ -246,7 +242,6 @@ export function Status() {
           )}
         </DiscordCard>
 
-        {/* Commands cards */}
         {botStatusData.commands && botStatusData.commands.length > 0 && isBotActive && botStatusData.status.toLowerCase() === 'online' && (
           <>
             {botStatusData.commands.map((cmd) => {

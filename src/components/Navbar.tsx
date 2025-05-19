@@ -87,7 +87,7 @@ export function Navbar() {
                   )}
                   asChild
                 >
-                  <Link to={link.path}>
+                  <Link to={link.path ?? '/'}>
                     <link.icon className="w-4 h-4" />
                     <span>{link.label}</span>
                   </Link>
@@ -124,7 +124,7 @@ export function Navbar() {
                           {link.items?.map((item, idx) => (
                             <Link
                               key={idx}
-                              to={item.path}
+                              to={item.path ?? '/'}
                               className={cn(
                                 "block px-4 py-2 text-sm text-[#B9BBBE] hover:bg-[#5865F2]/10 hover:text-white",
                                 location.pathname === item.path && "bg-[#5865F2]/10 text-white"
@@ -184,7 +184,7 @@ export function Navbar() {
                     asChild
                   >
                     <Link 
-                      to={link.path}
+                      to={link.path ?? '/'}
                       onClick={closeMenu}
                     >
                       <link.icon className="w-4 h-4" />
@@ -230,7 +230,7 @@ export function Navbar() {
                               asChild
                             >
                               <Link 
-                                to={item.path}
+                                to={item.path ?? '/'}
                                 onClick={closeMenu}
                               >
                                 {item.label}

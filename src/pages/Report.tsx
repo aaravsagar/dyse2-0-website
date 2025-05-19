@@ -347,7 +347,7 @@ export default function Report() {
                   
                   <div className="flex justify-center my-4">
                     <ReCAPTCHA
-                      sitekey="6LcAU1YpAAAAAJiQH_PTQrRsxDzvMV8jx1q-wDmS"
+                      sitekey="6LcD0D8rAAAAAOcECo801pLG4DK7Qm0avVHXpQLo"
                       onChange={handleRecaptchaChange}
                       theme="dark"
                     />
@@ -481,7 +481,7 @@ export default function Report() {
                   
                   <div className="flex justify-center my-4">
                     <ReCAPTCHA
-                      sitekey="6LcAU1YpAAAAAJiQH_PTQrRsxDzvMV8jx1q-wDmS"
+                      sitekey="6LcD0D8rAAAAAOcECo801pLG4DK7Qm0avVHXpQLo"
                       onChange={handleRecaptchaChange}
                       theme="dark"
                     />

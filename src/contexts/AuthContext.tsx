@@ -1,5 +1,6 @@
+// sirf User import karo, getUserData hata do
+import { User } from '@/lib/firebase';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getUserData, User } from '@/lib/firebase';
 
 interface AuthContextType {
   currentUser: User | null;
