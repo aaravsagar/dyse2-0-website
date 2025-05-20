@@ -8,7 +8,7 @@ import {
   updateDoc,
   doc as firestoreDoc,
 } from "firebase/firestore";
-import { getDatabase, ref, set, onValue, update } from "firebase/database";
+import { getDatabase, ref, set, update } from "firebase/database";
 
 // Firebase config
 const firebaseConfig = {
@@ -26,7 +26,6 @@ const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const database = getDatabase(app);
 
-// Report types
 export interface Report {
   id: string;
   reporterEmail: string;
@@ -38,8 +37,7 @@ export interface Report {
   [key: string]: any;
 }
 
-// -------------------- REPORT FUNCTIONS (Firestore + Realtime DB for status) --------------------
-
+// Submit a user report (Firestore + RTDB status)
 const submitUserReport = async (
   reporterEmail: string,
   reporterDiscordId: string,
@@ -75,6 +73,7 @@ const submitUserReport = async (
   }
 };
 
+// Submit a bug report (Firestore + RTDB status)
 const submitBugReport = async (
   reporterEmail: string,
   reporterDiscordId: string,
@@ -104,7 +103,7 @@ const submitBugReport = async (
   }
 };
 
-// Get all reports from Firestore
+// Get all reports from Firestore (userReports + bugReports)
 const getAllReports = async (): Promise<Report[]> => {
   try {
     const userSnapshot = await getDocs(collection(firestore, "userReports"));
@@ -112,13 +111,13 @@ const getAllReports = async (): Promise<Report[]> => {
 
     const userReports: Report[] = userSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...(doc.data() as Report),
-    }));
+      ...doc.data(),
+    } as Report));
 
     const bugReports: Report[] = bugSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...(doc.data() as Report),
-    }));
+      ...doc.data(),
+    } as Report));
 
     const allReports = [...userReports, ...bugReports];
 
@@ -127,29 +126,24 @@ const getAllReports = async (): Promise<Report[]> => {
     });
 
     return allReports;
-  } catch (error) {
+  } catch {
     return [];
   }
 };
 
+// Update status and closedAt field for report in Firestore + RTDB
 const updateReportStatus = async (
   reportId: string,
   reportType: "user" | "bug",
   status: "open" | "resolved" | "closed"
 ) => {
   try {
-    // Update status in Realtime DB
     const statusRef = ref(database, `reportStatus/${reportType}/${reportId}`);
     await update(statusRef, { status });
 
-    // Update Firestore
     const reportDocRef = firestoreDoc(firestore, `${reportType}Reports`, reportId);
     const updateData: Partial<Report> = { status };
-    if (status === "closed") {
-      updateData.closedAt = Timestamp.now();
-    } else {
-      updateData.closedAt = null;
-    }
+    updateData.closedAt = status === "closed" ? Timestamp.now() : null;
 
     await updateDoc(reportDocRef, updateData);
 
@@ -159,8 +153,7 @@ const updateReportStatus = async (
   }
 };
 
-// -------------------- FEEDBACK --------------------
-
+// Submit feedback (Firestore)
 const submitFeedback = async (
   name: string,
   email: string,
@@ -175,16 +168,12 @@ const submitFeedback = async (
     });
     return { success: true };
   } catch (error) {
-    console.error("Error submitting feedback:", error);
     return { success: false, error };
   }
 };
 
-// -------------------- BOT STATUS --------------------
-
+// Bot status ref (Realtime DB)
 const botStatusRef = ref(database, "botStatus");
-
-// -------------------- EXPORTS --------------------
 
 export {
   firestore,
@@ -195,6 +184,7 @@ export {
   updateReportStatus,
   submitFeedback,
   botStatusRef,
-  onValue,
+  ref,
+  set,
   update,
 };
