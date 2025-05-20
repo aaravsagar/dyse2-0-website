@@ -26,27 +26,17 @@ const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const database = getDatabase(app);
 
-// Interfaces
-export interface User {
+// Report types
+export interface Report {
   id: string;
-  email: string;
-  discordUsername: string;
-  discordID: string;
-  verified: boolean;
-  createdAt: any;
+  reporterEmail: string;
+  reporterDiscordId: string;
+  status: "open" | "resolved" | "closed";
+  createdAt: Timestamp;
+  closedAt?: Timestamp | null;
+  type: "user" | "bug";
+  [key: string]: any;
 }
-
-// ------------- DUMMY AUTH FUNCTIONS TO AVOID ERRORS -------------
-// These throw errors because auth is removed but code imports them
-const registerUser = async () => {
-  throw new Error("registerUser is disabled");
-};
-const loginUser = async () => {
-  throw new Error("loginUser is disabled");
-};
-const logoutUser = async () => {
-  throw new Error("logoutUser is disabled");
-};
 
 // -------------------- REPORT FUNCTIONS (Firestore + Realtime DB for status) --------------------
 
@@ -115,30 +105,25 @@ const submitBugReport = async (
 };
 
 // Get all reports from Firestore
-const getAllReports = async (): Promise<
-  Array<Record<string, any>>
-> => {
+const getAllReports = async (): Promise<Report[]> => {
   try {
     const userSnapshot = await getDocs(collection(firestore, "userReports"));
     const bugSnapshot = await getDocs(collection(firestore, "bugReports"));
 
-    const userReports = userSnapshot.docs.map((doc) => ({
+    const userReports: Report[] = userSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as Report),
     }));
 
-    const bugReports = bugSnapshot.docs.map((doc) => ({
+    const bugReports: Report[] = bugSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as Report),
     }));
 
     const allReports = [...userReports, ...bugReports];
 
     allReports.sort((a, b) => {
-      // Safe fallback for createdAt (Timestamp)
-      const aTime = a.createdAt && "seconds" in a.createdAt ? a.createdAt.seconds : 0;
-      const bTime = b.createdAt && "seconds" in b.createdAt ? b.createdAt.seconds : 0;
-      return bTime - aTime;
+      return b.createdAt.seconds - a.createdAt.seconds;
     });
 
     return allReports;
@@ -159,7 +144,7 @@ const updateReportStatus = async (
 
     // Update Firestore
     const reportDocRef = firestoreDoc(firestore, `${reportType}Reports`, reportId);
-    const updateData: any = { status };
+    const updateData: Partial<Report> = { status };
     if (status === "closed") {
       updateData.closedAt = Timestamp.now();
     } else {
@@ -212,8 +197,4 @@ export {
   botStatusRef,
   onValue,
   update,
-  // Dummy auth exports to avoid import errors in your codebase
-  registerUser,
-  loginUser,
-  logoutUser,
 };
