@@ -11,17 +11,20 @@ interface DiscordCardProps {
 export function DiscordCard({ 
   children, 
   className, 
-  animate = true 
+  animate = true
 }: DiscordCardProps) {
+  const embedColor = "#F04747"; // fixed red color
+
   const cardContent = (
-    <div className={cn(
-      "bg-[#2F3136] border border-[#42454A] rounded-md overflow-hidden shadow-lg",
-      className
-    )}>
-      <div className="px-4 py-3 bg-[#36393F]/60 border-b border-[#42454A]">
-        <div className="h-2 w-12 bg-[#5865F2] rounded-full" />
-      </div>
-      <div className="p-4">
+    <div
+      className={cn(
+        "bg-[#2C2F33] rounded-md shadow-[0_2px_10px_rgba(0,0,0,0.2)] overflow-hidden border-l-4",
+        className
+      )}
+      style={{ borderLeftColor: embedColor }}
+    >
+      {/* Removed the top small bar */}
+      <div className="p-4 text-sm text-[#DCDDDE]">
         {children}
       </div>
     </div>
@@ -30,9 +33,9 @@ export function DiscordCard({
   if (animate) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.25 }}
       >
         {cardContent}
       </motion.div>

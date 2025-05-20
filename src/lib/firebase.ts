@@ -1,25 +1,26 @@
 import { initializeApp } from 'firebase/app';
-import { 
-  getFirestore, 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
-  getDocs, 
-  query, 
-  where, 
-  Timestamp
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  Timestamp,
+  addDoc
 } from 'firebase/firestore';
-import { 
-  getDatabase, 
-  ref, 
-  set, 
-  onValue, 
-  push, 
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  push,
   update
 } from 'firebase/database';
 
-// Your web app's Firebase configuration
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAeuemszrpB7QVPsTuTmp3CI6-X5MDtFqE",
   authDomain: "claw-f0b1d.firebaseapp.com",
@@ -35,6 +36,7 @@ const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const database = getDatabase(app);
 
+// Interfaces
 export interface User {
   id: string;
   email: string;
@@ -44,7 +46,8 @@ export interface User {
   createdAt: any;
 }
 
-// User management functions
+// -------------------- USER FUNCTIONS --------------------
+
 const registerUser = async (email: string, discordUsername: string, discordID: string) => {
   try {
     const usersRef = collection(firestore, "users");
@@ -133,15 +136,16 @@ const checkIsAdmin = async (userId: string) => {
   }
 };
 
-// Real-time Database functions
+// -------------------- REPORT FUNCTIONS (Realtime DB) --------------------
+
 const submitUserReport = async (
-  reporterEmail: string, 
+  reporterEmail: string,
   reporterDiscordId: string,
-  targetUsername: string, 
-  targetDiscordId: string, 
-  serverName: string, 
-  serverId: string, 
-  description: string, 
+  targetUsername: string,
+  targetDiscordId: string,
+  serverName: string,
+  serverId: string,
+  description: string,
   screenshotUrl?: string
 ) => {
   try {
@@ -238,7 +242,7 @@ const getAllReports = (callback: (reports: any[]) => void) => {
   });
 
   return () => {
-    // Cleanup function can be added here if needed for unsubscribing
+    // Optional: Cleanup unsubscribes
   };
 };
 
@@ -252,8 +256,32 @@ const updateReportStatus = async (reportId: string, reportType: 'user' | 'bug', 
   }
 };
 
-// Bot status
+// -------------------- FEEDBACK (Firestore) --------------------
+
+const submitFeedback = async (
+  name: string,
+  email: string,
+  message: string
+) => {
+  try {
+    await addDoc(collection(firestore, 'feedback'), {
+      name,
+      email,
+      message,
+      createdAt: Timestamp.now()
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error submitting feedback:', error);
+    return { success: false, error };
+  }
+};
+
+// -------------------- BOT STATUS (Realtime DB) --------------------
+
 const botStatusRef = ref(database, 'botStatus');
+
+// -------------------- EXPORTS --------------------
 
 export {
   firestore,
@@ -267,6 +295,7 @@ export {
   submitBugReport,
   getAllReports,
   updateReportStatus,
+  submitFeedback,
   botStatusRef,
   onValue,
   update,

@@ -163,10 +163,10 @@ export default function Report() {
       <div className="max-w-3xl mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-2 w-full bg-[#2F3136]">
-            <TabsTrigger value="user" className="data-[state=active]:bg-[#5865F2]">
+            <TabsTrigger value="user" className="data-[state=active]:bg-[#F56565]">
               Report User
             </TabsTrigger>
-            <TabsTrigger value="bug" className="data-[state=active]:bg-[#5865F2]">
+            <TabsTrigger value="bug" className="data-[state=active]:bg-[#F56565]">
               Report Bug
             </TabsTrigger>
           </TabsList>
@@ -174,7 +174,7 @@ export default function Report() {
           <TabsContent value="user" className="mt-6">
             <DiscordCard>
               <div className="flex items-center justify-center gap-4 mb-6">
-                <UserX className="w-10 h-10 text-[#5865F2]" />
+                <UserX className="w-10 h-10 text-[#F56565]" />
                 <h2 className="text-2xl font-bold">Report a User</h2>
               </div>
               
@@ -193,7 +193,7 @@ export default function Report() {
                       name="reporterUsername"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#B9BBBE]">Your Discord Username</FormLabel>
+                          <FormLabel className="text-[#F56565]">Your Discord Username</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -212,7 +212,7 @@ export default function Report() {
                       name="reporterDiscordId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#B9BBBE]">Your Discord ID</FormLabel>
+                          <FormLabel className="text-[#F56565]">Your Discord ID</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -233,7 +233,7 @@ export default function Report() {
                       name="targetUsername"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#B9BBBE]">Target Discord Username</FormLabel>
+                          <FormLabel className="text-[#F56565]">Target Discord Username</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -252,7 +252,7 @@ export default function Report() {
                       name="targetDiscordId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#B9BBBE]">Target Discord ID</FormLabel>
+                          <FormLabel className="text-[#F56565]">Target Discord ID</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -273,7 +273,7 @@ export default function Report() {
                       name="serverName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#B9BBBE]">Server Name</FormLabel>
+                          <FormLabel className="text-[#F56565]">Server Name</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -292,7 +292,7 @@ export default function Report() {
                       name="serverId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#B9BBBE]">Server ID</FormLabel>
+                          <FormLabel className="text-[#F56565]">Server ID</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -312,7 +312,7 @@ export default function Report() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#B9BBBE]">Description</FormLabel>
+                        <FormLabel className="text-[#F56565]">Description</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
@@ -331,7 +331,7 @@ export default function Report() {
                     name="screenshotUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#B9BBBE]">Screenshot URL (Optional)</FormLabel>
+                        <FormLabel className="text-[#F56565]">Screenshot URL (Optional)</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -355,7 +355,7 @@ export default function Report() {
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-[#5865F2] hover:bg-[#4752C4]"
+                    className="w-full bg-[#F56565] hover:bg-[#4752C4]"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? 'Submitting...' : 'Submit Report'}
@@ -368,7 +368,7 @@ export default function Report() {
           <TabsContent value="bug" className="mt-6">
             <DiscordCard>
               <div className="flex items-center justify-center gap-4 mb-6">
-                <Bug className="w-10 h-10 text-[#5865F2]" />
+                <Bug className="w-10 h-10 text-[#F56565]" />
                 <h2 className="text-2xl font-bold">Report a Bug</h2>
               </div>
               
@@ -387,7 +387,7 @@ export default function Report() {
                       name="reporterUsername"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#B9BBBE]">Your Discord Username</FormLabel>
+                          <FormLabel className="text-[#F56565]">Your Discord Username</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -406,7 +406,7 @@ export default function Report() {
                       name="reporterDiscordId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#B9BBBE]">Your Discord ID</FormLabel>
+                          <FormLabel className="text-[#F56565]">Your Discord ID</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -426,7 +426,7 @@ export default function Report() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#B9BBBE]">Bug Description</FormLabel>
+                        <FormLabel className="text-[#F56565]">Bug Description</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
@@ -445,7 +445,7 @@ export default function Report() {
                     name="stepsToReproduce"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#B9BBBE]">Steps to Reproduce</FormLabel>
+                        <FormLabel className="text-[#F56565]">Steps to Reproduce</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
@@ -464,7 +464,7 @@ export default function Report() {
                     name="screenshotUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#B9BBBE]">Screenshot URL (Optional)</FormLabel>
+                        <FormLabel className="text-[#F56565]">Screenshot URL (Optional)</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -489,7 +489,7 @@ export default function Report() {
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-[#5865F2] hover:bg-[#4752C4]"
+                    className="w-full bg-[#F56565] hover:bg-[#F56666]"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? 'Submitting...' : 'Submit Bug Report'}

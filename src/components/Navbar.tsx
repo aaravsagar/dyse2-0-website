@@ -9,6 +9,7 @@ import {
   Activity, 
   Menu, 
   X,
+  Mail,
   ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -55,8 +56,10 @@ export function Navbar() {
         { path: '/usage/commands', label: 'Command List' }
       ]
     },
+    { path: '/changelog', label: 'Changelog', icon: FileText },
     { path: '/status', label: 'Status', icon: Activity },
     { path: '/report', label: 'Report', icon: AlertCircle },
+    { path: '/feedback', label: 'Feedback', icon: Mail },
   ];
   
   return (
@@ -68,8 +71,12 @@ export function Navbar() {
             className="flex items-center space-x-2"
             onClick={closeMenu}
           >
-            <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center">
-              <span className="text-white font-bold text-lg">D</span>
+            <div className="w-8 h-8 rounded-full overflow-hidden">
+              <img 
+                src="https://cdn.discordapp.com/app-icons/1322592306670338129/daab4e79fea4d0cb886b1fc92e8560e3.png?size=512" 
+                alt="Logo" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <span className="font-bold text-white text-xl hidden sm:inline-block">DYSE 2.0</span>
           </Link>

@@ -13,6 +13,8 @@ import Commands from '@/pages/usage/Commands';
 import { Status } from '@/pages/Status';
 import Report from '@/pages/Report';
 import NotFound from '@/pages/NotFound';
+import Changelog from '@/pages/Changelog';
+import  Feedback  from '@/pages/Feedback';
 
 function App() {
   return (
@@ -28,8 +30,10 @@ function App() {
             <Route path="/usage/earn" element={<Earn />} />
             <Route path="/usage/leaderboard" element={<Leaderboard />} />
             <Route path="/usage/commands" element={<Commands />} />
+            <Route path="/changelog" element={<Changelog />} />
             <Route path="/status" element={<Status />} />
             <Route path="/report" element={<Report />} />
+            <Route path="/feedback" element={<Feedback />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
