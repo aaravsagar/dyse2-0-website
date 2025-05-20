@@ -2,14 +2,16 @@ import { initializeApp } from 'firebase/app';
 import {
   getFirestore,
   collection,
-  doc,
+  doc as firestoreDoc,
   setDoc,
   getDoc,
   getDocs,
   query,
   where,
   Timestamp,
-  addDoc
+  addDoc,
+  updateDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import {
   getDatabase,
@@ -17,7 +19,7 @@ import {
   set,
   onValue,
   push,
-  update
+  update,
 } from 'firebase/database';
 
 // Firebase config
@@ -46,98 +48,11 @@ export interface User {
   createdAt: any;
 }
 
-// -------------------- USER FUNCTIONS --------------------
+// -------------------- REPORT FUNCTIONS (Firestore + Realtime DB for status) --------------------
 
-const registerUser = async (email: string, discordUsername: string, discordID: string) => {
-  try {
-    const usersRef = collection(firestore, "users");
-    const q = query(usersRef, where("email", "==", email));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-      return { success: false, error: "User already exists" };
-    }
-
-    const userDoc = doc(usersRef);
-    const userData: User = {
-      id: userDoc.id,
-      email,
-      discordUsername,
-      discordID,
-      verified: false,
-      createdAt: Timestamp.now()
-    };
-
-    await setDoc(userDoc, userData);
-    return { success: true, user: userData };
-  } catch (error) {
-    return { success: false, error };
-  }
-};
-
-const loginUser = async (email: string) => {
-  try {
-    const usersRef = collection(firestore, "users");
-    const q = query(usersRef, where("email", "==", email));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      return { success: false, error: "User not found" };
-    }
-
-    const userData = {
-      id: querySnapshot.docs[0].id,
-      ...querySnapshot.docs[0].data()
-    } as User;
-
-    return { success: true, user: userData };
-  } catch (error) {
-    return { success: false, error };
-  }
-};
-
-const logoutUser = async () => {
-  try {
-    localStorage.removeItem('user');
-    return { success: true };
-  } catch (error) {
-    return { success: false, error };
-  }
-};
-
-const getUserData = async (userId: string) => {
-  try {
-    const docRef = doc(firestore, "users", userId);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      const userData = {
-        id: docSnap.id,
-        ...docSnap.data()
-      } as User;
-      return { success: true, userData };
-    } else {
-      return { success: false, error: "User data not found" };
-    }
-  } catch (error) {
-    return { success: false, error };
-  }
-};
-
-const checkIsAdmin = async (userId: string) => {
-  try {
-    const userData = await getUserData(userId);
-    if (userData.success && userData.userData) {
-      return userData.userData.discordID === "746215033502957650";
-    }
-    return false;
-  } catch (error) {
-    return false;
-  }
-};
-
-// -------------------- REPORT FUNCTIONS (Realtime DB) --------------------
-
+/**
+ * Submit a user report (stored in Firestore)
+ */
 const submitUserReport = async (
   reporterEmail: string,
   reporterDiscordId: string,
@@ -149,10 +64,8 @@ const submitUserReport = async (
   screenshotUrl?: string
 ) => {
   try {
-    const reportsRef = ref(database, 'reports/users');
-    const newReportRef = push(reportsRef);
-
-    await set(newReportRef, {
+    // Save report in Firestore
+    const docRef = await addDoc(collection(firestore, 'userReports'), {
       reporterEmail,
       reporterDiscordId,
       targetUsername,
@@ -162,16 +75,24 @@ const submitUserReport = async (
       description,
       screenshotUrl: screenshotUrl || null,
       status: 'open',
-      createdAt: new Date().toISOString(),
-      type: 'user'
+      createdAt: Timestamp.now(),
+      closedAt: null,
+      type: 'user',
     });
 
-    return { success: true, reportId: newReportRef.key };
+    // Initialize status in Realtime DB for quick status updates
+    const statusRef = ref(database, `reportStatus/user/${docRef.id}`);
+    await set(statusRef, { status: 'open' });
+
+    return { success: true, reportId: docRef.id };
   } catch (error) {
     return { success: false, error };
   }
 };
 
+/**
+ * Submit a bug report (stored in Firestore)
+ */
 const submitBugReport = async (
   reporterEmail: string,
   reporterDiscordId: string,
@@ -180,76 +101,83 @@ const submitBugReport = async (
   screenshotUrl?: string
 ) => {
   try {
-    const reportsRef = ref(database, 'reports/bugs');
-    const newReportRef = push(reportsRef);
-
-    await set(newReportRef, {
+    // Save report in Firestore
+    const docRef = await addDoc(collection(firestore, 'bugReports'), {
       reporterEmail,
       reporterDiscordId,
       description,
       stepsToReproduce,
       screenshotUrl: screenshotUrl || null,
       status: 'open',
-      createdAt: new Date().toISOString(),
-      type: 'bug'
+      createdAt: Timestamp.now(),
+      closedAt: null,
+      type: 'bug',
     });
 
-    return { success: true, reportId: newReportRef.key };
+    // Initialize status in Realtime DB for quick status updates
+    const statusRef = ref(database, `reportStatus/bug/${docRef.id}`);
+    await set(statusRef, { status: 'open' });
+
+    return { success: true, reportId: docRef.id };
   } catch (error) {
     return { success: false, error };
   }
 };
 
-const getAllReports = (callback: (reports: any[]) => void) => {
-  const userReportsRef = ref(database, 'reports/users');
-  const bugReportsRef = ref(database, 'reports/bugs');
+/**
+ * Get all reports combined from Firestore
+ */
+const getAllReports = async (): Promise<any[]> => {
+  try {
+    const userSnapshot = await getDocs(collection(firestore, 'userReports'));
+    const bugSnapshot = await getDocs(collection(firestore, 'bugReports'));
 
-  let allReports: any[] = [];
-  let userReportsLoaded = false;
-  let bugReportsLoaded = false;
+    const userReports = userSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
-  const checkComplete = () => {
-    if (userReportsLoaded && bugReportsLoaded) {
-      allReports.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      callback(allReports);
-    }
-  };
+    const bugReports = bugSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
-  onValue(userReportsRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      const reportsList = Object.entries(data).map(([key, value]) => ({
-        id: key,
-        ...(value as object)
-      }));
-      allReports = [...allReports.filter(r => r.type !== 'user'), ...reportsList];
-    }
-    userReportsLoaded = true;
-    checkComplete();
-  });
+    const allReports = [...userReports, ...bugReports];
+    allReports.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
 
-  onValue(bugReportsRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      const reportsList = Object.entries(data).map(([key, value]) => ({
-        id: key,
-        ...(value as object)
-      }));
-      allReports = [...allReports.filter(r => r.type !== 'bug'), ...reportsList];
-    }
-    bugReportsLoaded = true;
-    checkComplete();
-  });
-
-  return () => {
-    // Optional: Cleanup unsubscribes
-  };
+    return allReports;
+  } catch (error) {
+    return [];
+  }
 };
 
-const updateReportStatus = async (reportId: string, reportType: 'user' | 'bug', status: 'open' | 'resolved') => {
+/**
+ * Update report status in Realtime DB and Firestore
+ * Status can be 'open', 'resolved', or 'closed'.
+ * When status = 'closed', saves closedAt timestamp in Firestore.
+ */
+const updateReportStatus = async (
+  reportId: string,
+  reportType: 'user' | 'bug',
+  status: 'open' | 'resolved' | 'closed'
+) => {
   try {
-    const reportRef = ref(database, `reports/${reportType}s/${reportId}`);
-    await update(reportRef, { status });
+    // Update status in Realtime DB
+    const statusRef = ref(database, `reportStatus/${reportType}/${reportId}`);
+    await update(statusRef, { status });
+
+    // Update Firestore report document
+    const reportDocRef = firestoreDoc(firestore, `${reportType}Reports`, reportId);
+
+    const updateData: any = { status };
+    if (status === 'closed') {
+      updateData.closedAt = Timestamp.now();
+    } else {
+      updateData.closedAt = null;
+    }
+
+    await updateDoc(reportDocRef, updateData);
+
     return { success: true };
   } catch (error) {
     return { success: false, error };
@@ -286,11 +214,6 @@ const botStatusRef = ref(database, 'botStatus');
 export {
   firestore,
   database,
-  registerUser,
-  loginUser,
-  logoutUser,
-  getUserData,
-  checkIsAdmin,
   submitUserReport,
   submitBugReport,
   getAllReports,
