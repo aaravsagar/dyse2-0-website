@@ -1,26 +1,14 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from "firebase/app";
 import {
   getFirestore,
   collection,
-  doc as firestoreDoc,
-  setDoc,
-  getDoc,
   getDocs,
-  query,
-  where,
   Timestamp,
   addDoc,
   updateDoc,
-  deleteDoc,
-} from 'firebase/firestore';
-import {
-  getDatabase,
-  ref,
-  set,
-  onValue,
-  push,
-  update,
-} from 'firebase/database';
+  doc as firestoreDoc,
+} from "firebase/firestore";
+import { getDatabase, ref, set, onValue, update } from "firebase/database";
 
 // Firebase config
 const firebaseConfig = {
@@ -48,11 +36,20 @@ export interface User {
   createdAt: any;
 }
 
+// ------------- DUMMY AUTH FUNCTIONS TO AVOID ERRORS -------------
+// These throw errors because auth is removed but code imports them
+const registerUser = async () => {
+  throw new Error("registerUser is disabled");
+};
+const loginUser = async () => {
+  throw new Error("loginUser is disabled");
+};
+const logoutUser = async () => {
+  throw new Error("logoutUser is disabled");
+};
+
 // -------------------- REPORT FUNCTIONS (Firestore + Realtime DB for status) --------------------
 
-/**
- * Submit a user report (stored in Firestore)
- */
 const submitUserReport = async (
   reporterEmail: string,
   reporterDiscordId: string,
@@ -64,8 +61,7 @@ const submitUserReport = async (
   screenshotUrl?: string
 ) => {
   try {
-    // Save report in Firestore
-    const docRef = await addDoc(collection(firestore, 'userReports'), {
+    const docRef = await addDoc(collection(firestore, "userReports"), {
       reporterEmail,
       reporterDiscordId,
       targetUsername,
@@ -74,15 +70,14 @@ const submitUserReport = async (
       serverId,
       description,
       screenshotUrl: screenshotUrl || null,
-      status: 'open',
+      status: "open",
       createdAt: Timestamp.now(),
       closedAt: null,
-      type: 'user',
+      type: "user",
     });
 
-    // Initialize status in Realtime DB for quick status updates
     const statusRef = ref(database, `reportStatus/user/${docRef.id}`);
-    await set(statusRef, { status: 'open' });
+    await set(statusRef, { status: "open" });
 
     return { success: true, reportId: docRef.id };
   } catch (error) {
@@ -90,9 +85,6 @@ const submitUserReport = async (
   }
 };
 
-/**
- * Submit a bug report (stored in Firestore)
- */
 const submitBugReport = async (
   reporterEmail: string,
   reporterDiscordId: string,
@@ -101,22 +93,20 @@ const submitBugReport = async (
   screenshotUrl?: string
 ) => {
   try {
-    // Save report in Firestore
-    const docRef = await addDoc(collection(firestore, 'bugReports'), {
+    const docRef = await addDoc(collection(firestore, "bugReports"), {
       reporterEmail,
       reporterDiscordId,
       description,
       stepsToReproduce,
       screenshotUrl: screenshotUrl || null,
-      status: 'open',
+      status: "open",
       createdAt: Timestamp.now(),
       closedAt: null,
-      type: 'bug',
+      type: "bug",
     });
 
-    // Initialize status in Realtime DB for quick status updates
     const statusRef = ref(database, `reportStatus/bug/${docRef.id}`);
-    await set(statusRef, { status: 'open' });
+    await set(statusRef, { status: "open" });
 
     return { success: true, reportId: docRef.id };
   } catch (error) {
@@ -124,13 +114,13 @@ const submitBugReport = async (
   }
 };
 
-/**
- * Get all reports combined from Firestore
- */
-const getAllReports = async (): Promise<any[]> => {
+// Get all reports from Firestore
+const getAllReports = async (): Promise<
+  Array<Record<string, any>>
+> => {
   try {
-    const userSnapshot = await getDocs(collection(firestore, 'userReports'));
-    const bugSnapshot = await getDocs(collection(firestore, 'bugReports'));
+    const userSnapshot = await getDocs(collection(firestore, "userReports"));
+    const bugSnapshot = await getDocs(collection(firestore, "bugReports"));
 
     const userReports = userSnapshot.docs.map((doc) => ({
       id: doc.id,
@@ -143,7 +133,13 @@ const getAllReports = async (): Promise<any[]> => {
     }));
 
     const allReports = [...userReports, ...bugReports];
-    allReports.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+
+    allReports.sort((a, b) => {
+      // Safe fallback for createdAt (Timestamp)
+      const aTime = a.createdAt && "seconds" in a.createdAt ? a.createdAt.seconds : 0;
+      const bTime = b.createdAt && "seconds" in b.createdAt ? b.createdAt.seconds : 0;
+      return bTime - aTime;
+    });
 
     return allReports;
   } catch (error) {
@@ -151,26 +147,20 @@ const getAllReports = async (): Promise<any[]> => {
   }
 };
 
-/**
- * Update report status in Realtime DB and Firestore
- * Status can be 'open', 'resolved', or 'closed'.
- * When status = 'closed', saves closedAt timestamp in Firestore.
- */
 const updateReportStatus = async (
   reportId: string,
-  reportType: 'user' | 'bug',
-  status: 'open' | 'resolved' | 'closed'
+  reportType: "user" | "bug",
+  status: "open" | "resolved" | "closed"
 ) => {
   try {
     // Update status in Realtime DB
     const statusRef = ref(database, `reportStatus/${reportType}/${reportId}`);
     await update(statusRef, { status });
 
-    // Update Firestore report document
+    // Update Firestore
     const reportDocRef = firestoreDoc(firestore, `${reportType}Reports`, reportId);
-
     const updateData: any = { status };
-    if (status === 'closed') {
+    if (status === "closed") {
       updateData.closedAt = Timestamp.now();
     } else {
       updateData.closedAt = null;
@@ -184,7 +174,7 @@ const updateReportStatus = async (
   }
 };
 
-// -------------------- FEEDBACK (Firestore) --------------------
+// -------------------- FEEDBACK --------------------
 
 const submitFeedback = async (
   name: string,
@@ -192,22 +182,22 @@ const submitFeedback = async (
   message: string
 ) => {
   try {
-    await addDoc(collection(firestore, 'feedback'), {
+    await addDoc(collection(firestore, "feedback"), {
       name,
       email,
       message,
-      createdAt: Timestamp.now()
+      createdAt: Timestamp.now(),
     });
     return { success: true };
   } catch (error) {
-    console.error('Error submitting feedback:', error);
+    console.error("Error submitting feedback:", error);
     return { success: false, error };
   }
 };
 
-// -------------------- BOT STATUS (Realtime DB) --------------------
+// -------------------- BOT STATUS --------------------
 
-const botStatusRef = ref(database, 'botStatus');
+const botStatusRef = ref(database, "botStatus");
 
 // -------------------- EXPORTS --------------------
 
@@ -222,4 +212,8 @@ export {
   botStatusRef,
   onValue,
   update,
+  // Dummy auth exports to avoid import errors in your codebase
+  registerUser,
+  loginUser,
+  logoutUser,
 };
