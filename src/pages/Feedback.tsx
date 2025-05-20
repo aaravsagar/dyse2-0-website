@@ -1,17 +1,23 @@
 import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DiscordCard } from '@/components/ui/discord-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from '@/hooks/use-toast';
 import { submitFeedback } from '@/lib/firebase';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, MessageSquare, User } from 'lucide-react';
+import { AlertCircle, MessageSquare } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
 
 const feedbackSchema = z.object({
@@ -48,12 +54,8 @@ export default function Feedback() {
     setIsSubmitting(true);
 
     try {
-      const result = await submitFeedback(
-        data.name,
-        data.email,
-        data.message,
-        data.screenshotUrl || undefined
-      );
+      // Adjust this based on how many arguments your `submitFeedback` actually supports
+      const result = await submitFeedback(data.name, data.email, data.message);
 
       if (result.success) {
         toast({
