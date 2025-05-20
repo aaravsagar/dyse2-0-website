@@ -1,14 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  CheckCircle2, XCircle, Clock, Database, Banknote,
-  Users, AlertTriangle, Wifi, Coins, Landmark, BadgeHelp
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Database,
+  Banknote,
+  Users,
+  AlertTriangle,
+  Wifi,
+  Coins,
+  Landmark,
+  BadgeHelp,
 } from 'lucide-react';
 import { DiscordCard } from '@/components/ui/discord-card';
 import { Progress } from '@/components/ui/progress';
 import { botStatusRef, onValue, update } from '@/lib/firebase';
 import { BotStatusType, CommandDetail } from '@/types';
 
-// Commands
+// Commands info
 const commandDetails: Record<string, CommandDetail> = {
   help: {
     title: 'Help',
@@ -68,7 +77,6 @@ const commandDetails: Record<string, CommandDetail> = {
   },
 };
 
-// Categories split including separate Bank commands
 const commandCategories = {
   casino: ['blackjack', 'coinflip', 'gamble'],
   earn: ['claim', 'work'],
@@ -114,14 +122,20 @@ export function Status() {
   useEffect(() => {
     const unsubBotStatus = onValue(botStatusRef, (snapshot) => {
       const data = snapshot.val();
-      if (data) setBotStatusData(data);
+      if (data) {
+        setBotStatusData(data);
+      } else {
+        setBotStatusData(null);
+      }
       setLoading(false);
     });
     return () => unsubBotStatus();
   }, []);
 
-  // Check uptime and bot active status every 5 seconds, update Firebase status accordingly
+  // Check uptime and bot active status every 5 seconds, update Firebase accordingly
   useEffect(() => {
+    if (!botStatusData) return;
+
     const interval = setInterval(() => {
       if (!botStatusData) {
         setIsBotActive(false);
@@ -167,9 +181,9 @@ export function Status() {
       setDisplayUptime('-');
       return;
     }
+
     let startUptime = botStatusData.uptime ?? 0;
 
-    // Update display every second, incrementing uptime seconds
     const timer = setInterval(() => {
       setDisplayUptime(formatUptime(startUptime));
       startUptime++;
@@ -181,8 +195,8 @@ export function Status() {
   const renderStat = (value: string | number | undefined | null) =>
     isBotActive && botStatusData?.status.toLowerCase() === 'online' ? value ?? '-' : '-';
 
-  const renderCommandsByCategory = () => {
-    return Object.entries(commandCategories).map(([category, commands]) => (
+  const renderCommandsByCategory = () =>
+    Object.entries(commandCategories).map(([category, commands]) => (
       <div key={category} className="mb-6">
         <h2 className="text-xl font-bold capitalize mb-3 text-[#FFFFFF]">{category} Commands</h2>
         {commands.map((cmd) => {
@@ -208,12 +222,11 @@ export function Status() {
         })}
       </div>
     ));
-  };
 
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5865F2]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5865F2]" />
       </div>
     );
   }
@@ -276,13 +289,13 @@ export function Status() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <Stat
-                  icon={Clock}
-                  label="Uptime"
-                  value={displayUptime}
-                />
+                <Stat icon={Clock} label="Uptime" value={displayUptime} />
                 <Stat icon={Wifi} label="Latency (ms)" value={renderStat(botStatusData.latency)} />
-                <Stat icon={Database} label="Commands" value={renderStat(botStatusData.commands?.length)} />
+                <Stat
+                  icon={Database}
+                  label="Commands"
+                  value={renderStat(botStatusData.commands?.length)}
+                />
                 <Stat icon={Users} label="Location" value={renderStat(botStatusData.location)} />
               </div>
             </>
@@ -317,7 +330,7 @@ export function Status() {
   );
 }
 
-function Stat({ icon: Icon, label, value }: { icon: any; label: string; value: any }) {
+function Stat({ icon: Icon, label, value }: { icon: React.ComponentType<any>; label: string; value: any }) {
   return (
     <div className="flex items-center">
       <Icon className="h-5 w-5 mr-3 text-[#B9BBBE]" />

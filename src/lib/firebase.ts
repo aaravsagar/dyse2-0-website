@@ -8,7 +8,15 @@ import {
   updateDoc,
   doc as firestoreDoc,
 } from "firebase/firestore";
-import { getDatabase, ref, set, update } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  update,
+  onValue as firebaseOnValue,
+  DatabaseReference,
+  DataSnapshot,
+} from "firebase/database";
 
 // Firebase config
 const firebaseConfig = {
@@ -36,6 +44,14 @@ export interface Report {
   type: "user" | "bug";
   [key: string]: any;
 }
+
+// Wrapper for onValue to properly type the snapshot parameter
+export const onValue = (
+  reference: DatabaseReference,
+  callback: (snapshot: DataSnapshot) => void
+) => {
+  return firebaseOnValue(reference, callback);
+};
 
 // Submit a user report (Firestore + RTDB status)
 const submitUserReport = async (
