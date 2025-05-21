@@ -19,7 +19,6 @@ export function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [userAgreementsOpen, setUserAgreementsOpen] = useState(false);
-  const [usageOpen, setUsageOpen] = useState(false);
   
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
