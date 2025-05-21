@@ -6,9 +6,6 @@ import { Footer } from '@/components/Footer';
 import Home from '@/pages/Home';
 import TermsAndConditions from '@/pages/user-agreements/TermsAndConditions';
 import PrivacyPolicy from '@/pages/user-agreements/PrivacyPolicy';
-import Casino from '@/pages/usage/Casino';
-import Earn from '@/pages/usage/Earn';
-import Leaderboard from '@/pages/usage/Leaderboard';
 import Commands from '@/pages/usage/Commands';
 import { Status } from '@/pages/Status';
 import Report from '@/pages/Report';
@@ -25,11 +22,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/user-agreements/terms" element={<TermsAndConditions />} />
-            <Route path="/user-agreements/privacy" element={<PrivacyPolicy />} />
-            <Route path="/usage/casino" element={<Casino />} />
-            <Route path="/usage/earn" element={<Earn />} />
-            <Route path="/usage/leaderboard" element={<Leaderboard />} />
-            <Route path="/usage/commands" element={<Commands />} />
+            <Route path="/user-agreements/privacy" element={<PrivacyPolicy />} />            <Route path="/usage/commands" element={<Commands />} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/status" element={<Status />} />
             <Route path="/report" element={<Report />} />

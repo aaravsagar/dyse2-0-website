@@ -21,14 +21,6 @@ export function Footer() {
             <Link to="/status" className="hover:text-white transition-colors">
               Status
             </Link>
-            <a 
-              href="https://github.com/YEKKIHORA/DYSE-2.0" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              GitHub
-            </a>
           </nav>
           
           <Separator className="bg-[#42454A] w-24" />
@@ -38,7 +30,7 @@ export function Footer() {
               Made with ❤️ by YEKKIHORA
             </p>
             <p className="text-[#72767D] text-xs">
-              © {currentYear} DYSE 2.0 – All rights reserved.
+              © 2024 - {currentYear} DYSE 2.0 – All rights reserved.
             </p>
           </div>
         </div>

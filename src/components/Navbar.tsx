@@ -24,7 +24,7 @@ export function Navbar() {
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
   
-  const navLinks = [
+    const navLinks = [
     { path: '/', label: 'Home', icon: Home },
     { 
       label: 'User Agreements', 
@@ -33,29 +33,13 @@ export function Navbar() {
       isOpen: userAgreementsOpen,
       toggle: () => {
         setUserAgreementsOpen(!userAgreementsOpen);
-        setUsageOpen(false);
       },
       items: [
         { path: '/user-agreements/terms', label: 'Terms & Conditions' },
         { path: '/user-agreements/privacy', label: 'Privacy Policy' }
       ]
     },
-    { 
-      label: 'Usage', 
-      icon: Command, 
-      dropdown: true,
-      isOpen: usageOpen,
-      toggle: () => {
-        setUsageOpen(!usageOpen);
-        setUserAgreementsOpen(false);
-      },
-      items: [
-        { path: '/usage/casino', label: 'Casino' },
-        { path: '/usage/earn', label: 'Earn' },
-        { path: '/usage/leaderboard', label: 'Leaderboard' },
-        { path: '/usage/commands', label: 'Command List' }
-      ]
-    },
+    { path: '/usage/commands', label: 'Commands', icon: Command },
     { path: '/changelog', label: 'Changelog', icon: FileText },
     { path: '/status', label: 'Status', icon: Activity },
     { path: '/report', label: 'Report', icon: AlertCircle },

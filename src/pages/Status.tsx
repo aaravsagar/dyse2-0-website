@@ -26,6 +26,13 @@ const commandDetails: Record<string, CommandDetail> = {
     tips: 'Use this command if you need guidance on how to use the bot.',
     icon: BadgeHelp,
   },
+  limit: {
+    title: 'Limit',
+    usage: '$limit',
+    description: 'Displays a list of available commands and how to use them.',
+    tips: 'Use this command if you need guidance on how to use the bot.',
+    icon: BadgeHelp,
+  },
   balance: {
     title: 'Balance',
     usage: '$balance',
@@ -61,6 +68,13 @@ const commandDetails: Record<string, CommandDetail> = {
     tips: 'High risk, high reward — gamble wisely!',
     icon: Coins,
   },
+  roulette: {
+    title: 'Roulette',
+    usage: '$roulette <red|black|green> <amount>',
+    description: 'Bet on a color and spin the wheel. Win based on the outcome!',
+    tips: 'Green has the highest payout but lowest odds. Red and Black are safer bets.',
+    icon: Coins,
+  },
   claim: {
     title: 'Claim',
     usage: '$claim',
@@ -78,9 +92,9 @@ const commandDetails: Record<string, CommandDetail> = {
 };
 
 const commandCategories = {
-  casino: ['blackjack', 'coinflip', 'gamble'],
+  casino: ['blackjack', 'coinflip', 'gamble', 'roulette'],
   earn: ['claim', 'work'],
-  general: ['help'],
+  utils: ['help', 'limit'],
   bank: ['balance', 'bank'],
 };
 
@@ -118,7 +132,6 @@ export function Status() {
 
   const prevUptimeRef = useRef<number | null>(null);
 
-  // Listen to bot status changes from Firebase
   useEffect(() => {
     const unsubBotStatus = onValue(botStatusRef, (snapshot) => {
       const data = snapshot.val();
@@ -132,7 +145,6 @@ export function Status() {
     return () => unsubBotStatus();
   }, []);
 
-  // Check uptime and bot active status every 5 seconds, update Firebase accordingly
   useEffect(() => {
     if (!botStatusData) return;
 
@@ -153,7 +165,6 @@ export function Status() {
       }
 
       if (currentUptime === prevUptimeRef.current) {
-        // Uptime hasn't increased, mark offline
         if (botStatusData.status !== 'Offline') {
           update(botStatusRef, {
             status: 'Offline',
@@ -162,7 +173,6 @@ export function Status() {
         }
         setIsBotActive(false);
       } else {
-        // Uptime increased, mark online
         if (botStatusData.status !== 'Online') {
           update(botStatusRef, { status: 'Online', downtimeSince: null }).catch(console.error);
         }
@@ -175,7 +185,6 @@ export function Status() {
     return () => clearInterval(interval);
   }, [botStatusData]);
 
-  // Update display uptime every second for smooth dynamic display
   useEffect(() => {
     if (!botStatusData) {
       setDisplayUptime('-');
@@ -195,33 +204,28 @@ export function Status() {
   const renderStat = (value: string | number | undefined | null) =>
     isBotActive && botStatusData?.status.toLowerCase() === 'online' ? value ?? '-' : '-';
 
-  const renderCommandsByCategory = () =>
-    Object.entries(commandCategories).map(([category, commands]) => (
-      <div key={category} className="mb-6">
-        <h2 className="text-xl font-bold capitalize mb-3 text-[#FFFFFF]">{category} Commands</h2>
-        {commands.map((cmd) => {
-          const cmdInfo = commandDetails[cmd];
-          const Icon = cmdInfo.icon || Coins;
-          return (
-            <DiscordCard key={cmd} animate={false} className="mb-4">
-              <div className="flex items-center mb-2">
-                <Icon className="h-6 w-6 mr-2 text-[#5865F2]" />
-                <h3 className="text-lg font-bold">{cmdInfo.title}</h3>
-              </div>
-              <div className="mb-2 p-2 bg-[#2F3136] rounded">
-                <code className="text-sm">{cmdInfo.usage}</code>
-              </div>
-              <p className="text-[#B9BBBE]">{cmdInfo.description}</p>
-              {cmdInfo.tips && (
-                <div className="mt-2 text-sm text-[#B9BBBE]">
-                  <strong>Tips:</strong> {cmdInfo.tips}
-                </div>
-              )}
-            </DiscordCard>
-          );
-        })}
-      </div>
-    ));
+const renderCommandsByCategory = () =>
+  Object.entries(commandCategories).map(([category, commands]) => (
+    <div key={category} className="mb-6">
+      <h2 className="text-xl font-bold capitalize mb-3 text-[#FFFFFF]">{category} Commands</h2>
+      {commands.map((cmd) => {
+        const cmdInfo = commandDetails[cmd];
+        const Icon = cmdInfo.icon || Coins;
+        return (
+          <DiscordCard key={cmd} animate={false} className="mb-4">
+            <div className="flex items-center mb-2">
+              <Icon className="h-6 w-6 mr-2 text-[#5865F2]" />
+              <h3 className="text-lg font-bold capitalize">{cmdInfo.title}</h3>
+            </div>
+            <div className="p-2 bg-[#2F3136] rounded">
+              <code className="text-sm">${cmd}</code>
+            </div>
+          </DiscordCard>
+        );
+      })}
+    </div>
+  ));
+
 
   if (loading) {
     return (
@@ -317,13 +321,11 @@ export function Status() {
           )}
         </DiscordCard>
 
-        {/* Prefix Info */}
         <DiscordCard className="mb-6">
           <h2 className="text-lg font-bold mb-2">{prefixInfoCard.title}</h2>
           <p className="text-sm text-[#B9BBBE]">{prefixInfoCard.content}</p>
         </DiscordCard>
 
-        {/* Command Categories */}
         {isBotActive && renderCommandsByCategory()}
       </div>
     </div>

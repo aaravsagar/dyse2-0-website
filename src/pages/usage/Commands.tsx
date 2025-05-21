@@ -1,133 +1,190 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DiscordCard } from '@/components/ui/discord-card';
-import { commandData } from '@/data/commands';
-import { Command, Search, HelpCircle } from 'lucide-react';
 import { useState } from 'react';
+import { commandData } from '@/data/commands';
+import { Command as CommandType } from '@/types/command';
+import { Search, HelpCircle, ChevronDown, ChevronUp, Settings } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { DiscordCard } from '@/components/ui/discord-card';
 
 export default function Commands() {
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Filter commands based on search term
-  const filteredCommands = commandData.filter(command => 
-    command.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    command.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    command.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [expandedCommands, setExpandedCommands] = useState<Record<string, boolean>>({});
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   
   // Group commands by category
-  const groupedCommands = filteredCommands.reduce((acc, command) => {
-    const category = command.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(command);
+  const commandsByCategory = commandData.reduce((acc, command) => {
+    (acc[command.category] ??= []).push(command);
     return acc;
-  }, {} as Record<string, typeof commandData>);
+  }, {} as Record<string, CommandType[]>);
   
+  // Categories list
+  const categories = ['all', ...Object.keys(commandsByCategory)];
+  
+  // Filter logic
+  const filteredCommands = commandData.filter(cmd => {
+    const term = searchTerm.toLowerCase();
+    return (
+      (cmd.name + cmd.title + cmd.description).toLowerCase().includes(term) &&
+      (selectedCategory === 'all' || cmd.category === selectedCategory)
+    );
+  });
+  
+  const groupedFiltered = filteredCommands.reduce((acc, cmd) => {
+    (acc[cmd.category] ??= []).push(cmd);
+    return acc;
+  }, {} as Record<string, CommandType[]>);
+  
+  // Expand / collapse handlers
+  const toggleExpand = (key: string) =>
+    setExpandedCommands(prev => ({ ...prev, [key]: !prev[key] }));
+  const expandAll = () =>
+    setExpandedCommands(Object.fromEntries(filteredCommands.map(c => [c.name, true])));
+  const collapseAll = () => setExpandedCommands({});
+
   return (
-    <div className="container px-4 mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Bot Usage</h1>
+    <div className="flex bg-[#111827] text-white">
+      {/* Sidebar */}
+      <aside className="w-64 bg-[#1a1a1a] border-r border-gray-800 p-4 overflow-y-auto">
+        <h2 className="text-xl font-bold mb-4">Categories</h2>
+        <ul className="space-y-2">
+          {categories.map(cat => {
+            const count = cat === 'all' ? commandData.length : commandsByCategory[cat]?.length ?? 0;
+            return (
+              <li key={cat}>
+                <button
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`w-full flex justify-between items-center px-3 py-2 rounded-md transition-colors
+                    ${selectedCategory === cat ? 'bg-[#e11d48] text-white' : 'hover:bg-gray-800'}`}
+                >
+                  <span className="capitalize">{cat}</span>
+                  <span className="bg-gray-800 text-xs px-2 py-1 rounded-full">{count}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </aside>
       
-      <Tabs defaultValue="commands" className="max-w-4xl mx-auto">
-        <TabsList className="grid grid-cols-4 w-full bg-[#2F3136]">
-          <TabsTrigger value="casino" className="data-[state=active]:bg-[#5865F2]">
-            Casino
-          </TabsTrigger>
-          <TabsTrigger value="earn" className="data-[state=active]:bg-[#5865F2]">
-            Earn
-          </TabsTrigger>
-          <TabsTrigger value="leaderboard" className="data-[state=active]:bg-[#5865F2]">
-            Leaderboard
-          </TabsTrigger>
-          <TabsTrigger value="commands" className="data-[state=active]:bg-[#5865F2]">
-            Commands
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="casino">
-          <div className="mt-6 text-center">
-            <p className="text-[#B9BBBE]">
-              Please navigate to the Casino tab to see information about casino games.
-            </p>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="earn">
-          <div className="mt-6 text-center">
-            <p className="text-[#B9BBBE]">
-              Please navigate to the Earn tab to see information about earning coins.
-            </p>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="leaderboard">
-          <div className="mt-6 text-center">
-            <p className="text-[#B9BBBE]">
-              Please navigate to the Leaderboard tab to see information about rankings.
-            </p>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="commands" className="mt-6 space-y-8">
-          <DiscordCard>
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <Command className="w-10 h-10 text-[#5865F2]" />
-              <h2 className="text-2xl font-bold">Command List</h2>
-            </div>
-            <p className="text-[#B9BBBE] mb-4 text-center">
-              Here's a complete list of all DYSE 2.0 commands and how to use them.
-            </p>
-            
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#B9BBBE]" size={18} />
-              <Input
-                type="text"
-                placeholder="Search commands..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-[#40444B] border-[#36393F] text-white"
-              />
-            </div>
-          </DiscordCard>
+      {/* Main Content */}
+      <main className="flex-1 p-6">
+        <div className="max-w-4xl mx-auto space-y-8">
           
-          {Object.entries(groupedCommands).map(([category, commands]) => (
-            <div key={category} className="space-y-4">
-              <h3 className="text-xl font-bold capitalize text-[#B9BBBE] px-2">{category} Commands</h3>
-              
-              {commands.map((command, index) => (
-                <DiscordCard key={index}>
-                  <div className="flex items-center mb-3">
-                    <Command className="h-6 w-6 mr-2 text-[#5865F2]" />
-                    <h3 className="text-xl font-bold">{command.title}</h3>
-                  </div>
-                  <div className="mb-3 p-3 bg-[#2F3136] rounded-md">
-                    <code className="text-sm font-mono text-white">{command.usage}</code>
-                  </div>
-                  <p className="text-[#B9BBBE] mb-3">{command.description}</p>
-                  {command.tips && (
-                    <div className="text-sm text-[#B9BBBE]">
-                      <span className="font-semibold">Tips:</span> {command.tips}
+          {/* 1. Command Format Guide */}
+          <section className="bg-[#1f2937] p-6 rounded-lg border border-gray-700">
+            <h2 className="text-2xl font-semibold mb-4">Command Format Guide</h2>
+            <div className="space-y-3">
+              <p><span className="font-mono bg-gray-800 px-2 py-1 rounded">Default Perfix: $</span></p>
+              <p><span className="font-mono bg-gray-800 px-2 py-1 rounded">Example: $help</span></p>
+              <p><span className="font-mono text-[#e11d48]">Please Note If you change the prefix of Bot then You have to use that prefix instead of $</span></p>
+                            <p><span className="font-mono bg-gray-800 px-2 py-1 rounded">Example Custom Prefix = !</span></p>
+                                          <p><span className="font-mono bg-gray-800 px-2 py-1 rounded">Then Command will be: !help</span></p>
+              <div className="mt-4 space-y-1">
+                <p><span className="font-mono text-[#e11d48]">&lt;&gt;</span> — required</p>
+                
+              </div>
+              <p className="text-sm text-gray-400 italic mt-4">(DO NOT TYPE THE BRACKETS)</p>
+            </div>
+          </section>
+          
+          {/* 2. Header + Controls */}
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold">Command List</h1>
+            <div className="flex gap-3">
+              <button
+                onClick={expandAll}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-sm font-medium transition"
+              >
+                Expand All
+              </button>
+              <button
+                onClick={collapseAll}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-sm font-medium transition"
+              >
+                Collapse All
+              </button>
+            </div>
+          </div>
+          
+          {/* 3. Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <Input
+              type="text"
+              placeholder="Search commands..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="pl-10 bg-[#1f2937] border-[#374151]"
+            />
+          </div>
+          
+          {/* 4. Command Cards */}
+          {Object.keys(groupedFiltered).length > 0 ? (
+            Object.entries(groupedFiltered).map(([cat, cmds]) => (
+              <div key={cat} className="space-y-4">
+                <h3 className="text-xl font-bold text-gray-300 capitalize">{cat} Commands</h3>
+                <div className="space-y-3">
+                  {cmds.map(cmd => (
+                    <div key={cmd.name} className="border border-gray-700 rounded-lg overflow-hidden">
+                      <button
+                        onClick={() => toggleExpand(cmd.name)}
+                        className="w-full flex items-center justify-between p-4 bg-[#1f2937] hover:bg-[#2d3748] transition"
+                      >
+                        <div className="flex items-center">
+                          <Settings className="h-5 w-5 mr-3 text-[#e11d48]" />
+                          <code className="bg-gray-800 px-2 py-1 rounded text-sm mr-3 text-white">
+                            {cmd.name}
+                          </code>
+                          <span className="text-gray-300">{cmd.title}</span>
+                        </div>
+                        {expandedCommands[cmd.name] ? (
+                          <ChevronUp className="h-5 w-5 text-gray-400" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-gray-400" />
+                        )}
+                      </button>
+                      <div
+                        className={`bg-[#1f2937] transition-all duration-300 overflow-hidden ${
+                          expandedCommands[cmd.name]
+                            ? 'max-h-96 opacity-100 border-t border-gray-700'
+                            : 'max-h-0 opacity-0'
+                        }`}
+                      >
+                        <div className="p-4 space-y-4">
+                          <div>
+                            <h4 className="text-sm font-bold text-gray-400 mb-1">Usage:</h4>
+                            <code className="block bg-gray-800 p-3 rounded-md text-sm font-mono">
+                              {cmd.usage}
+                            </code>
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-gray-400 mb-1">Description:</h4>
+                            <p className="text-gray-300">{cmd.description}</p>
+                          </div>
+                          {cmd.tips && (
+                            <div>
+                              <h4 className="text-sm font-bold text-gray-400 mb-1">Tips:</h4>
+                              <p className="text-gray-300 italic">{cmd.tips}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  )}
-                </DiscordCard>
-              ))}
-            </div>
-          ))}
-          
-          {filteredCommands.length === 0 && (
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
             <DiscordCard>
               <div className="flex flex-col items-center justify-center py-8">
-                <HelpCircle className="h-16 w-16 text-[#5865F2] mb-4" />
+                <HelpCircle className="h-16 w-16 text-[#e11d48] mb-4" />
                 <h3 className="text-xl font-bold mb-2">No commands found</h3>
-                <p className="text-[#B9BBBE] text-center">
+                <p className="text-gray-300 text-center">
                   No commands match your search term. Try a different keyword or clear the search.
                 </p>
               </div>
             </DiscordCard>
           )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      </main>
     </div>
   );
 }
