@@ -11,18 +11,19 @@ import { Status } from '@/pages/Status';
 import Report from '@/pages/Report';
 import NotFound from '@/pages/NotFound';
 import Changelog from '@/pages/Changelog';
-import  Feedback  from '@/pages/Feedback';
+import Feedback from '@/pages/Feedback';
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-[#36393F] text-white">
+      <div className="min-h-screen flex flex-col bg-[#111827] text-white">
         <Navbar />
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/user-agreements/terms" element={<TermsAndConditions />} />
-            <Route path="/user-agreements/privacy" element={<PrivacyPolicy />} />            <Route path="/usage/commands" element={<Commands />} />
+            <Route path="/user-agreements/privacy" element={<PrivacyPolicy />} />
+            <Route path="/usage/commands" element={<Commands />} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/status" element={<Status />} />
             <Route path="/report" element={<Report />} />
