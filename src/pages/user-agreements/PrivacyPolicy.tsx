@@ -1,20 +1,25 @@
 import { DiscordCard } from '@/components/ui/discord-card';
-import { 
-  Database, 
-  Lock, 
-  Server, 
-  Trash, 
-  Globe, 
+import {
+  Database,
+  Lock,
+  Server,
+  Trash,
+  Globe,
   Mail,
-  Shield,
-  AlertTriangle
 } from 'lucide-react';
+
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '@/components/ui/tabs'; // ✅ Adjust this path based on your actual file structure
 
 export default function PrivacyPolicy() {
   return (
     <div className="container px-4 mx-auto py-8">
       <h1 className="text-3xl font-bold mb-8 text-center">User Agreements</h1>
-      
+
       <Tabs defaultValue="privacy" className="max-w-4xl mx-auto">
         <TabsList className="grid grid-cols-2 w-full bg-[#2F3136]">
           <TabsTrigger value="terms" className="data-[state=active]:bg-[#5865F2]">
@@ -24,7 +29,7 @@ export default function PrivacyPolicy() {
             Privacy Policy
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="terms" className="mt-6">
           <DiscordCard>
             <div className="flex flex-col space-y-8">
@@ -35,7 +40,7 @@ export default function PrivacyPolicy() {
             </div>
           </DiscordCard>
         </TabsContent>
-        
+
         <TabsContent value="privacy" className="mt-6 space-y-6">
           <DiscordCard>
             <div className="flex items-start gap-3">
@@ -51,7 +56,7 @@ export default function PrivacyPolicy() {
               </div>
             </div>
           </DiscordCard>
-          
+
           <DiscordCard>
             <div className="flex items-start gap-3">
               <Lock className="w-6 h-6 text-[#5865F2] mt-1" />
@@ -69,7 +74,7 @@ export default function PrivacyPolicy() {
               </div>
             </div>
           </DiscordCard>
-          
+
           <DiscordCard>
             <div className="flex items-start gap-3">
               <Server className="w-6 h-6 text-[#5865F2] mt-1" />
@@ -87,7 +92,7 @@ export default function PrivacyPolicy() {
               </div>
             </div>
           </DiscordCard>
-          
+
           <DiscordCard>
             <div className="flex items-start gap-3">
               <Trash className="w-6 h-6 text-[#5865F2] mt-1" />
@@ -102,7 +107,7 @@ export default function PrivacyPolicy() {
               </div>
             </div>
           </DiscordCard>
-          
+
           <DiscordCard>
             <div className="flex items-start gap-3">
               <Globe className="w-6 h-6 text-[#5865F2] mt-1" />
@@ -117,7 +122,7 @@ export default function PrivacyPolicy() {
               </div>
             </div>
           </DiscordCard>
-          
+
           <DiscordCard>
             <div className="flex items-start gap-3">
               <Mail className="w-6 h-6 text-[#5865F2] mt-1" />
