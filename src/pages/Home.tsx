@@ -12,17 +12,17 @@ export default function Home() {
     {
       title: "Casino Games & Entertainment",
       description: "Experience the thrill of casino games with our virtual currency system. Play Blackjack, Roulette, and more without any real-world risk. Perfect for creating an engaging community atmosphere.",
-      image: "/blackjack.png"
+      image: "https://images.pexels.com/photos/534216/pexels-photo-534216.jpeg?auto=compress&cs=tinysrgb&w=395&h=300&dpr=1"
     },
     {
       title: "Economy & Progression System",
       description: "Build your fortune through our comprehensive economy system. Work, trade, and invest your way to the top of the leaderboard. Features daily rewards, jobs, and various earning opportunities.",
-      image: "https://images.pexels.com/photos/534216/pexels-photo-534216.jpeg?auto=compress&cs=tinysrgb&w=395&h=300&dpr=1"
+      image: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=395&h=300&dpr=1"
     },
     {
       title: "Community & Competition",
       description: "Compete with other members in your server through our global leaderboard system. Show off your achievements, climb the ranks, and earn exclusive rewards.",
-      image: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=395&h=300&dpr=1"
+      image: "https://images.pexels.com/photos/3183183/pexels-photo-3183183.jpeg?auto=compress&cs=tinysrgb&w=395&h=300&dpr=1"
     }
   ];
 
@@ -108,7 +108,7 @@ export default function Home() {
                     alt={feature.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"></div>
+                  <div className="absolute inset-0 bg-black/20"></div>
                 </div>
               </div>
               
