@@ -147,8 +147,7 @@ export default function PrivacyPolicy() {
                 For any privacy-related questions or concerns, please contact us at:
               </p>
               <ul className="list-disc list-inside text-[#B9BBBE] space-y-2 mt-3 ml-4">
-                <li>Email: privacy@dysebot.app</li>
-                <li>Discord Support Server: discord.gg/dyse</li>
+                <li>Discord Support Server: discord.gg/QKfwJNKU66</li>
               </ul>
             </div>
           </div>
