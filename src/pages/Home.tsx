@@ -12,17 +12,17 @@ export default function Home() {
     {
       title: "Casino Games & Entertainment",
       description: "Experience the thrill of casino games with our virtual currency system. Play Blackjack, Roulette, and more without any real-world risk. Perfect for creating an engaging community atmosphere.",
-      image: "https://images.pexels.com/photos/1871508/pexels-photo-1871508.jpeg"
+      image: "https://images.pexels.com/photos/1871508/pexels-photo-1871508.jpeg?auto=compress&cs=tinysrgb&w=395&h=300&dpr=1"
     },
     {
       title: "Economy & Progression System",
       description: "Build your fortune through our comprehensive economy system. Work, trade, and invest your way to the top of the leaderboard. Features daily rewards, jobs, and various earning opportunities.",
-      image: "https://images.pexels.com/photos/534216/pexels-photo-534216.jpeg"
+      image: "https://images.pexels.com/photos/534216/pexels-photo-534216.jpeg?auto=compress&cs=tinysrgb&w=395&h=300&dpr=1"
     },
     {
       title: "Community & Competition",
       description: "Compete with other members in your server through our global leaderboard system. Show off your achievements, climb the ranks, and earn exclusive rewards.",
-      image: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg"
+      image: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=395&h=300&dpr=1"
     }
   ];
 
@@ -102,7 +102,7 @@ export default function Home() {
               className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-8 lg:gap-16`}
             >
               <div className="w-full lg:w-1/2">
-                <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
+                <div className="relative w-[395px] h-[300px] rounded-xl overflow-hidden shadow-2xl mx-auto">
                   <img
                     src={feature.image}
                     alt={feature.title}
