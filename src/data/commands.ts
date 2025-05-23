@@ -6,7 +6,7 @@ export interface Command {
   description: string;
   example: string;
   tips?: string;
-  category: 'admin' | 'casino' | 'earn' | 'leaderboard' | 'utility' | 'Bank';
+  category: 'admin' | 'casino' | 'earn' | 'leaderboard' | 'utility' | 'Bank' | 'Fun';
 }
 
 export const commandData: Command[] = [
@@ -140,9 +140,45 @@ export const commandData: Command[] = [
     id: 'setonlychannel',
     name: 'setonlychannel',
     title: 'Set a Only Channel',
-    usage: '$setonlychannel <tag one or more channels>',
+    usage: '$set-onlychannel <tag one or more channels>',
     description: 'Set a channel Where Bot will only respond.',
-    example: '$setonlychannel #bot-commands',
+    example: '$set-onlychannel #bot-commands',
     category: 'admin'
+  },
+  {
+    id: 'resetonlychannel',
+    name: 'resetonlychannel',
+    title: 'Reset the Channel Restrictions',
+    usage: '$reset-onlychannel',
+    description: 'Reset the Channel Restrictions to Allow Commands to be Used Anywhere.',
+    example: '$reset-onlychannel',
+    category: 'admin'
+  },
+  {
+    id: 'listonlychannel',
+    name: 'listonlychannel',
+    title: 'List the Channels Where Bot is Allowed only',
+    usage: '$list-onlychannel <tag one or more channels>',
+    description: 'Get the List of Channels Where Bot is Allowed only.',
+    example: '$list-onlychannel',
+    category: 'admin'
+  },
+  {
+    id: 'crime',
+    name: 'Commit A Crime',
+    title: 'Commit A Crime Risk It Earn It',
+    usage: '$crime ',
+    description: 'Commit A Crime Risk For More Money ',
+    example: '$crime',
+    category: 'Fun'
+  },
+  {
+    id: 'Rob',
+    name: 'Rob Anyone',
+    title: 'Rob User to Steal Their Money',
+    usage: '$rob <user> ',
+    description: 'Rob User to Steal Their Money',
+    example: '$rob @user',
+    category: 'Fun'
   }
 ];
