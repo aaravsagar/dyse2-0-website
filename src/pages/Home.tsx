@@ -12,7 +12,7 @@ export default function Home() {
     {
       title: "Casino Games & Entertainment",
       description: "Experience the thrill of casino games with our virtual currency system. Play Blackjack, Roulette, and more without any real-world risk. Perfect for creating an engaging community atmosphere.",
-      image: "https://images.pexels.com/photos/1871508/pexels-photo-1871508.jpeg?auto=compress&cs=tinysrgb&w=395&h=300&dpr=1"
+      image: "/blackjack.png"
     },
     {
       title: "Economy & Progression System",
