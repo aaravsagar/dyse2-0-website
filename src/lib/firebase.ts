@@ -20,15 +20,14 @@ import {
 
 // Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyAeuemszrpB7QVPsTuTmp3CI6-X5MDtFqE",
-  authDomain: "claw-f0b1d.firebaseapp.com",
-  databaseURL: "https://claw-f0b1d-default-rtdb.firebaseio.com",
-  projectId: "claw-f0b1d",
-  storageBucket: "claw-f0b1d.appspot.com",
-  messagingSenderId: "176904127690",
-  appId: "1:176904127690:web:37f6f50dcf7446dbe9e033",
+  apiKey: "AIzaSyAUZbhbYqeIUIje1ajSi-99NhLz4ElHSDc",
+  authDomain: "dyse2-0.firebaseapp.com",
+  databaseURL: "https://dyse2-0-default-rtdb.firebaseio.com",
+  projectId: "dyse2-0",
+  storageBucket: "dyse2-0.firebasestorage.app",
+  messagingSenderId: "157736910877",
+  appId: "1:157736910877:web:c77287e43cb2fc6b6706f4"
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
