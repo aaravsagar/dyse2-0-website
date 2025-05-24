@@ -52,23 +52,20 @@ export default function Home() {
           >
             <Tooltip>
               <TooltipTrigger asChild>
-                <span>
-                  <Button
-                    disabled
-                    className="bg-gray-500 cursor-not-allowed font-semibold text-white px-8 py-6 text-lg"
-                  >
+                <a
+                  href="https://discord.com/oauth2/authorize?client_id=1322592306670338129&scope=bot&permissions=8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button className="bg-red-600 hover:bg-red-700 font-semibold text-white px-8 py-6 text-lg">
                     Invite to Server
                   </Button>
-                </span>
+                </a>
               </TooltipTrigger>
               <TooltipContent side="top" className="bg-gray-700 text-white">
-                Bot is under construction
+                Invite the bot to your server
               </TooltipContent>
             </Tooltip>
-
-            <span className="bg-yellow-500 text-black text-xs font-semibold px-3 py-1 rounded-full shadow">
-              🚧 Under Construction
-            </span>
           </motion.div>
         </div>
       </div>
