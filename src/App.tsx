@@ -7,7 +7,7 @@ import Home from '@/pages/Home';
 import TermsAndConditions from '@/pages/user-agreements/TermsAndConditions';
 import PrivacyPolicy from '@/pages/user-agreements/PrivacyPolicy';
 import Commands from '@/pages/usage/Commands';
-import { Status } from '@/pages/Status';
+import { StatusPage } from '@/pages/Status';
 import Report from '@/pages/Report';
 import NotFound from '@/pages/NotFound';
 import Changelog from '@/pages/Changelog';
@@ -25,7 +25,7 @@ function App() {
             <Route path="/user-agreements/privacy" element={<PrivacyPolicy />} />
             <Route path="/usage/commands" element={<Commands />} />
             <Route path="/changelog" element={<Changelog />} />
-            <Route path="/status" element={<Status />} />
+            <Route path="/status" element={<StatusPage />} />
             <Route path="/report" element={<Report />} />
             <Route path="/feedback" element={<Feedback />} />
             <Route path="*" element={<NotFound />} />
