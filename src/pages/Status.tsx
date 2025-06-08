@@ -8,7 +8,7 @@ export function StatusPage() {
   const [serverCount, setServerCount] = useState<number | null>(null);
   const [uptimeSeconds, setUptimeSeconds] = useState<number>(0);
   const [offlineSince, setOfflineSince] = useState<Date | null>(null);
-  const intervalRef = useRef<NodeJS.Timer | null>(null);
+  const intervalRef = useRef<number | null>(null);
 
   // Fetch botStatus.online and uptimeSeconds from RTDB
   useEffect(() => {
@@ -59,21 +59,25 @@ export function StatusPage() {
   }, [uptimeSeconds]);
 
   // Check uptimeSeconds updates every second and mark offline if > 2 mins no update
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      const now = new Date();
-      const diffMs = now.getTime() - lastUpdatedRef.current.getTime();
-      if (diffMs > 120000) { // 2 minutes = 120000 ms
-        if (!offlineSince) setOfflineSince(lastUpdatedRef.current);
-        setIsBotOnline(false);
-      } else {
-        setOfflineSince(null);
-      }
-    }, 1000);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [offlineSince]);
+useEffect(() => {
+  intervalRef.current = window.setInterval(() => {
+    const now = new Date();
+    const diffMs = now.getTime() - lastUpdatedRef.current.getTime();
+    if (diffMs > 120000) {
+      if (!offlineSince) setOfflineSince(lastUpdatedRef.current);
+      setIsBotOnline(false);
+    } else {
+      setOfflineSince(null);
+    }
+  }, 1000);
+
+  return () => {
+    if (intervalRef.current !== null) {
+      window.clearInterval(intervalRef.current);
+    }
+  };
+}, [offlineSince]);
+
 
   // Format offline countdown (time since offline)
   const formatOfflineDuration = () => {
