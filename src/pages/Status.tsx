@@ -10,7 +10,10 @@ export function StatusPage() {
   const [offlineSince, setOfflineSince] = useState<Date | null>(null);
   const intervalRef = useRef<number | null>(null);
 
-  // Fetch botStatus.online and uptimeSeconds from RTDB
+  const prevUptimeRef = useRef<number>(0);
+  const lastUpdatedRef = useRef<Date>(new Date());
+
+  // Listen for bot status from Realtime DB
   useEffect(() => {
     const unsubscribe = onValue(botStatusRef, (snapshot) => {
       const status = snapshot.val();
@@ -19,20 +22,20 @@ export function StatusPage() {
         setUptimeSeconds(status.uptimeSeconds || 0);
       }
     });
+
     return () => {
       unsubscribe();
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current !== null) window.clearInterval(intervalRef.current);
     };
   }, []);
 
-  // Fetch serverCount from Firestore at botStats/serverCount
+  // Fetch server count from Firestore
   useEffect(() => {
     async function fetchServerCount() {
       const docRef = doc(firestore, "botStats", "serverCount");
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        // Assuming the count is stored as a number field named 'count'
         if (typeof data.count === "number") {
           setServerCount(data.count);
         } else {
@@ -42,44 +45,41 @@ export function StatusPage() {
         setServerCount(null);
       }
     }
+
     fetchServerCount();
   }, []);
 
-  // Track offline detection: if uptimeSeconds hasn't changed in 2 minutes => offline
-  const prevUptimeRef = useRef<number>(0);
-  const lastUpdatedRef = useRef<Date>(new Date());
-
+  // Detect when uptimeSeconds changes and update tracking
   useEffect(() => {
     if (uptimeSeconds !== prevUptimeRef.current) {
       prevUptimeRef.current = uptimeSeconds;
       lastUpdatedRef.current = new Date();
-      setOfflineSince(null); // reset offline timer
-      setIsBotOnline(true);  // mark bot online on update
+      setOfflineSince(null); // reset if previously offline
+      setIsBotOnline(true);  // ensure bot is online
     }
   }, [uptimeSeconds]);
 
-  // Check uptimeSeconds updates every second and mark offline if > 2 mins no update
-useEffect(() => {
-  intervalRef.current = window.setInterval(() => {
-    const now = new Date();
-    const diffMs = now.getTime() - lastUpdatedRef.current.getTime();
-    if (diffMs > 120000) {
-      if (!offlineSince) setOfflineSince(lastUpdatedRef.current);
-      setIsBotOnline(false);
-    } else {
-      setOfflineSince(null);
-    }
-  }, 1000);
+  // Watch every second, and if no change for 2 mins, mark offline
+  useEffect(() => {
+    intervalRef.current = window.setInterval(() => {
+      const now = new Date();
+      const diffMs = now.getTime() - lastUpdatedRef.current.getTime();
+      if (diffMs > 120000) {
+        if (!offlineSince) setOfflineSince(lastUpdatedRef.current);
+        setIsBotOnline(false);
+      } else {
+        setOfflineSince(null);
+      }
+    }, 1000);
 
-  return () => {
-    if (intervalRef.current !== null) {
-      window.clearInterval(intervalRef.current);
-    }
-  };
-}, [offlineSince]);
+    return () => {
+      if (intervalRef.current !== null) {
+        window.clearInterval(intervalRef.current);
+      }
+    };
+  }, [offlineSince]);
 
-
-  // Format offline countdown (time since offline)
+  // Format duration since bot went offline
   const formatOfflineDuration = () => {
     if (!offlineSince) return null;
     const diff = Math.floor((new Date().getTime() - offlineSince.getTime()) / 1000);
@@ -109,7 +109,7 @@ useEffect(() => {
           {isBotOnline && (
             <p className="text-green-600 italic">
               <span className="inline-block h-2 w-2 mr-2 rounded-full border-2 border-green-500 animate-pulse" />
-              All system operationals
+              All system operational
             </p>
           )}
           {!isBotOnline && offlineSince && (
