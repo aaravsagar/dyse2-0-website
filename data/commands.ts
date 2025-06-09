@@ -16,7 +16,7 @@ export const commandData: Command[] = [
     name: 'bj',
     title: 'Blackjack',
     usage: '$blackjack <amount>',
-    description: 'Play a game of blackjack against the dealer. Beat the dealer's hand without busting (going over 21).',
+    description: 'Play a game of blackjack against the dealer. Beat the dealer\'s hand without busting (going over 21).',
     example: '$blackjack 100',
     tips: 'Use basic strategy to improve your odds!',
     category: 'casino'
